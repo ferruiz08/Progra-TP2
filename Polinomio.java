@@ -1,3 +1,5 @@
+package polinomio;
+
 public class Polinomio {
 	
 	private int grado ; 
@@ -50,6 +52,20 @@ public class Polinomio {
 	//Ejercicio 3
 	public double evaluarProgDinamica (double x) {
 		//guardo en res el termino independiente
+		double resultado = coeficientes[this.grado];
+		double potencias[] = new double[grado+1];
+		potencias[grado] = 1;
+		//lo resuelvo de atras para adelante para ir guardando las potencias
+		for (int i=grado-1;i>=0;i--) {
+			potencias[i] = x * potencias[i+1];
+			resultado+=(potencias[i]*coeficientes[i]);
+		}
+		return resultado;
+	}
+	
+	//Ejercicio 4
+	public double evaluarMejorada (double x) {
+		//guardo en res el termino independiente
 		double resultado=coeficientes[this.grado],pot=1;
 		//lo resuelvo de atras para adelante para ir reutilizando el calculo de la pot
 		for (int i=grado-1;i>=0;i--) {
@@ -58,8 +74,6 @@ public class Polinomio {
 		}
 		return resultado;
 	}
-	
-	//Ejercicio 4
 	
 	//Ejercicio 5
 	double evaluarPow(double x){
@@ -76,10 +90,4 @@ public class Polinomio {
         		resultado = resultado*x + coeficientes[i]; 
         	return resultado; 
     	} 
-	
-	
-	
-	
-
-
 }
