@@ -1,92 +1,95 @@
-public class Main {
+package polinomio;
 
-	public static void main(String[] args) {
-
-		/*
-		double coef[]= {8,-5,9,-6,20};
-		Polinomio poli = new Polinomio(4,coef);
-		double res=poli.evaluarRecursiva(5);
-		System.out.println(res);
-		double p=Polinomio.potencia(8,9);
-		System.out.println(p);
-		p=Polinomio.potenciaParOImpar(8,9);
-		System.out.println(p);
-		res=poli.evaluarHorner(5);
-		System.out.println(res);
-		//Ejercicio 3
-		double coef2[]= {1,1,1};
-		Polinomio poli2 = new Polinomio(2,coef2);
-		System.out.println("Polinomio metodo 3: " + poli.evaluarProgDinamica(5));
-		System.out.println("Polinomio metodo 3: " + poli2.evaluarProgDinamica(1));
-		System.out.println("Polinomio metodo 4: " + poli.evaluarMejorada(5));
-		System.out.println("Polinomio metodo 4: " + poli2.evaluarMejorada(1));
-		int i = 0;
-		double coef3[] = new double [100000000];
-		for (i = 0 ; i < coef3.length; i++)
-			coef3[i] = 1;
-		Polinomio poli3 = new Polinomio(i-1,coef3);
-		System.out.println("Polinomio metodo 3: " + poli3.evaluarProgDinamica(1));
-		
+public class Polinomio {
 	
-		double coef4[] = new double [100000000];
-		for (i = 0 ; i < coef4.length; i++)
-			coef4[i] = 1;
-		Polinomio poli4 = new Polinomio(i-1,coef3);
-		System.out.println("Polinomio metodo 4: " + poli4.evaluarMejorada(1));
-		
-		
-		*/
-		
-		int i = 0;
-		long inicio;
-		long fin;
-		
-		//p1
-		double [] c1 = new double [3000];
-		for (i = 0 ; i < c1.length; i++)
-			c1[i] = i;
-		Polinomio p1 = new Polinomio(i-1,c1);
-/*		
-		//p2
-		double [] c2 = new double [10];
-		for (i = 0 ; i < c2.length; i++)
-			c2[i] = i-10;
-		Polinomio p2 = new Polinomio(i-1,c2);
-		
-		//p3
-		double [] c3 = new double [100];
-		for (i = 0 ; i < c3.length; i++)
-			c3[i] = i;
-		Polinomio p3 = new Polinomio(i-1,c3);
-		
-		//p4
-		double [] c4 = new double [100000000];
-		for (i = 0 ; i < c4.length; i++)
-			c4[i] = 1;
-		Polinomio p4 = new Polinomio(i-1,c4);
-		
-		
-		//p5
-		double [] c5 = new double [500000000];
-		for (i = 0 ; i < c4.length; i++)
-			c5[i] = 0.00001*i;
-		Polinomio p5 = new Polinomio(i-1,c5);
-
-	*/		
-		
-		inicio = System.currentTimeMillis();
-		System.out.println(p1.evaluarRecursiva(1));
-		fin = System.currentTimeMillis();
-		System.out.println(fin-inicio);
-		
-		inicio = System.currentTimeMillis();
-		System.out.println(p1.evaluarHorner(1));
-		fin = System.currentTimeMillis();
-		System.out.println(fin-inicio);
-		
-		inicio = System.currentTimeMillis();
-		System.out.println(p1.evaluarProgDinamica(1));
-		fin = System.currentTimeMillis();
-		System.out.println(fin-inicio);
+	private int grado ; 
+	private double [] coeficientes;
+	
+	public Polinomio(int g, double[] c) {
+		grado=g;
+		coeficientes = c;
 	}
+	
+	//Ejercicio 1
+	double evaluarMSucecivas(double x){		
+		double suma=0;
+		for(int i=0; i < coeficientes.length-1 ; i++){
+			double multi=x;
+			for(int j=0; j<grado-i-1 ;j++){
+				multi*=x;
+			}
+			suma+= coeficientes[i]*multi;
+		}
+		return suma+coeficientes[coeficientes.length-1];
+	}
+	
+	//Ejercicio 2
+	double evaluarRecursiva(double x) {
+		return evaluarRecursivaAux(x,grado);
+	}
+	
+	double evaluarRecursivaAux(double x,int grado) {
+		if(grado==0)
+			return coeficientes[this.grado-grado];
+		return coeficientes[this.grado-grado]*potencia(x,grado) + evaluarRecursivaAux(x,grado-1);
+	}
+	
+	public static double potencia(double x,int exp) {
+		if(exp==0)
+			return 1;
+		return x * potencia(x,exp-1);
+	}
+	
+	public static double potenciaParOImpar(double x,int exp) {
+		if(exp==0)
+			return 1;
+		if(exp%2==0)
+			return potenciaParOImpar(x*x,exp/2);
+		else
+			return x*potenciaParOImpar(x,exp-1);
+	}
+	
+	//Ejercicio 3
+	public double evaluarProgDinamica (double x) {
+		//guardo en res el termino independiente
+		double resultado = coeficientes[this.grado];
+		double potencias[] = new double[grado+1];
+		potencias[grado] = 1;
+		//lo resuelvo de atras para adelante para ir guardando las potencias
+		for (int i=grado-1;i>=0;i--) {
+			potencias[i] = x * potencias[i+1];
+			resultado+=(potencias[i]*coeficientes[i]);
+		}
+		return resultado;
+	}
+	
+	//Ejercicio 4
+	public double evaluarMejorada (double x) {
+		//guardo en res el termino independiente
+		double resultado=coeficientes[this.grado],pot=1;
+		//lo resuelvo de atras para adelante para ir reutilizando el calculo de la pot
+		for (int i=grado-1;i>=0;i--) {
+			pot*=x;
+			resultado+=(pot*coeficientes[i]);
+		}
+		return resultado;
+	}
+	
+	//Ejercicio 5
+	double evaluarPow(double x){
+		double result=coeficientes[coeficientes.length -1];
+		for(int i=0;i<coeficientes.length-1;i++)
+			result+= coeficientes[i]*Math.pow(x, coeficientes.length -i-1);	
+		return result;
+	}
+	
+	//Ejercicio 6
+	double evaluarHorner(double x) { 
+        	double resultado = coeficientes[0];   
+  		for (int i=1; i<coeficientes.length; i++) 
+        		resultado = resultado*x + coeficientes[i]; 
+        	return resultado; 
+    	} 
+	
+
 }
